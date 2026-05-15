@@ -929,6 +929,20 @@
   }
 
 </style>
+
+<!-- =====================================================
+     GOOGLE ANALYTICS — SÈNIYA
+     1. Va sur https://analytics.google.com
+     2. Crée une propriété pour seniyagn.com
+     3. Remplace G-XXXXXXXXXX par ton vrai Measurement ID
+     ===================================================== -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
 </head>
 <body>
 
@@ -1183,22 +1197,29 @@
     <div class="contact-form-side reveal reveal-delay-2">
       <div class="form-title" data-fr="Prendre contact" data-en="Get in touch">Prendre contact</div>
       <div class="form-subtitle"><span data-fr="Institutions, collectivités, bailleurs ou partenaires — nous vous répondons sous 48h." data-en="Institutions, local authorities, funders or partners — we respond within 48h.">Institutions, collectivités, bailleurs ou partenaires — nous vous répondons sous 48h.</span></div>
-      <form onsubmit="handleSubmit(event)">
+      <!-- =====================================================
+           FORMSPREE — SÈNIYA Contact Form
+           1. Va sur https://formspree.io → crée un compte gratuit
+           2. Crée un nouveau formulaire avec l'email : contact@seniyagn.com
+           3. Formspree te donne un ID comme "xpwzabcd"
+           4. Remplace YOUR_FORMSPREE_ID ci-dessous par cet ID
+           ===================================================== -->
+      <form id="seniya-contact-form" action="https://formspree.io/f/xgodglvk" method="POST" onsubmit="handleSubmit(event)">
         <div class="form-group">
           <label data-fr="Nom complet" data-en="Full name">Nom complet</label>
-          <input type="text" placeholder="Votre nom et prénom" required>
+          <input type="text" name="nom" placeholder="Votre nom et prénom" required>
         </div>
         <div class="form-group">
           <label data-fr="Organisation" data-en="Organisation">Organisation</label>
-          <input type="text" placeholder="Votre institution ou entreprise">
+          <input type="text" name="organisation" placeholder="Votre institution ou entreprise">
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" placeholder="votre@email.com" required>
+          <input type="email" name="email" placeholder="votre@email.com" required>
         </div>
         <div class="form-group">
           <label data-fr="Vous êtes" data-en="You are">Vous êtes</label>
-          <select>
+          <select name="profil">
             <option value="">Sélectionner votre profil</option>
             <option>Institution gouvernementale</option>
             <option>Collectivité locale / Mairie</option>
@@ -1209,9 +1230,16 @@
         </div>
         <div class="form-group">
           <label data-fr="Message" data-en="Message">Message</label>
-          <textarea placeholder="Décrivez votre projet ou votre intérêt pour SÈNIYA..."></textarea>
+          <textarea name="message" placeholder="Décrivez votre projet ou votre intérêt pour SÈNIYA..." required></textarea>
         </div>
-        <button type="submit" class="form-submit" data-fr="Envoyer le message →" data-en="Send message →">Envoyer le message →</button>
+        <!-- Message de confirmation affiché après envoi -->
+        <div id="form-success" style="display:none; background:rgba(45,134,83,0.15); border:1px solid var(--jade); border-radius:4px; padding:16px; margin-bottom:16px; color:var(--mint); font-size:14px; text-align:center;">
+          ✓ Message envoyé avec succès. Nous vous répondrons sous 48h.
+        </div>
+        <div id="form-error" style="display:none; background:rgba(200,50,50,0.1); border:1px solid #c83232; border-radius:4px; padding:16px; margin-bottom:16px; color:#e07070; font-size:14px; text-align:center;">
+          ⚠ Erreur d'envoi. Vérifiez votre connexion ou écrivez-nous directement à contact@seniyagn.com
+        </div>
+        <button type="submit" class="form-submit" id="submit-btn" data-fr="Envoyer le message →" data-en="Send message →">Envoyer le message →</button>
       </form>
     </div>
   </div>
@@ -1294,20 +1322,51 @@
     }
   });
 
-  // Form submit
-  function handleSubmit(e) {
+  // Form submit — Formspree
+  async function handleSubmit(e) {
     e.preventDefault();
-    var btn = e.target.querySelector('.form-submit');
+    var btn = document.getElementById('submit-btn');
+    var successMsg = document.getElementById('form-success');
+    var errorMsg = document.getElementById('form-error');
     var lang = window._currentLang || 'fr';
-    btn.textContent = lang === 'en' ? 'Message sent' : 'Message envoye';
-    btn.style.background = 'var(--jade)';
-    btn.style.color = 'var(--white)';
-    setTimeout(function() {
-      btn.textContent = lang === 'en' ? 'Send message' : 'Envoyer le message';
-      btn.style.background = 'var(--gold)';
-      btn.style.color = 'var(--dark)';
-      e.target.reset();
-    }, 3000);
+
+    // Reset messages
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    // Loading state
+    btn.textContent = lang === 'en' ? 'Sending...' : 'Envoi en cours...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    try {
+      var response = await fetch(e.target.action, {
+        method: 'POST',
+        body: new FormData(e.target),
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.ok) {
+        successMsg.style.display = 'block';
+        e.target.reset();
+        btn.textContent = lang === 'en' ? 'Message sent ✓' : 'Message envoyé ✓';
+        btn.style.background = 'var(--jade)';
+        setTimeout(function() {
+          btn.textContent = lang === 'en' ? 'Send message →' : 'Envoyer le message →';
+          btn.style.background = 'var(--gold)';
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          successMsg.style.display = 'none';
+        }, 5000);
+      } else {
+        throw new Error('Formspree error');
+      }
+    } catch(err) {
+      errorMsg.style.display = 'block';
+      btn.textContent = lang === 'en' ? 'Send message →' : 'Envoyer le message →';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    }
   }
 </script>
 
