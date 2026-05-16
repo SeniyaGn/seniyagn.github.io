@@ -23,12 +23,17 @@
 
   html { scroll-behavior: smooth; }
 
+  html {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
   body {
     background: var(--dark);
     color: var(--white);
     font-family: 'DM Sans', sans-serif;
     font-weight: 300;
     overflow-x: hidden;
+    max-width: 100%;
     cursor: none;
   }
 
@@ -881,11 +886,18 @@
 
   /* Mobile */
   @media (max-width: 768px) {
-    nav { padding: 20px 24px; }
+    nav {
+      padding: 16px 20px;
+      box-sizing: border-box;
+      width: 100%;
+      overflow: hidden;
+    }
+    .nav-logo-text { font-size: 16px; }
     .nav-links { display: none; }
-    section { padding: 80px 24px; }
-    .hero { padding: 0 24px; }
-    .hero-title { font-size: 52px; }
+    .nav-cta { font-size: 11px; padding: 10px 14px; white-space: nowrap; }
+    section { padding: 80px 20px; }
+    .hero { padding: 0 20px; }
+    .hero-title { font-size: 42px; }
     .hero-stats { display: none; }
     .mission-inner,
     .impact-grid,
