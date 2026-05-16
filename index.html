@@ -887,14 +887,24 @@
   /* Mobile */
   @media (max-width: 768px) {
     nav {
-      padding: 16px 20px;
+      padding: 12px 16px;
       box-sizing: border-box;
       width: 100%;
-      overflow: hidden;
     }
-    .nav-logo-text { font-size: 16px; }
+    .nav-logo-img { height: 34px; width: 34px; }
+    .nav-logo-text { font-size: 15px; letter-spacing: 4px; }
     .nav-links { display: none; }
-    .nav-cta { font-size: 11px; padding: 10px 14px; white-space: nowrap; }
+    .nav-cta {
+      font-size: 9px;
+      padding: 8px 10px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .lang-toggle {
+      font-size: 9px;
+      padding: 6px 8px;
+      white-space: nowrap;
+    }
     section { padding: 80px 20px; }
     .hero { padding: 0 20px; }
     .hero-title { font-size: 42px; }
@@ -917,6 +927,10 @@
     align-items: center;
     gap: 4px;
     margin-left: 32px;
+  }
+  @media (max-width: 768px) {
+    .lang-switcher { margin-left: 8px; }
+    .lang-btn { font-size: 9px; padding: 5px 8px; letter-spacing: 1px; }
   }
   .lang-btn {
     font-family: 'Space Mono', monospace;
